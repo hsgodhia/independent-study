@@ -1,0 +1,26 @@
+ubuntu@ip-10-0-29-85:~/nlp$ python word_vec.py 
+Data ready: 21232 193269 21232
+Found 21232 words with glove vectors, total was 21232
+Glove loaded
+('filtered data size:', 193269)
+Training..
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 0 and loss: 42.3110610972 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 1 and loss: 29.4592672365 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 2 and loss: 19.76029795 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 3 and loss: 14.7078729578 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 4 and loss: 11.9204135697 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 5 and loss: 10.1997087787 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 6 and loss: 9.04920288249 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 7 and loss: 8.23804171921 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 8 and loss: 7.63885202507 ---
+('tuples processed (wrd, cntxt):', 386500)
+---completed: 9 and loss: 7.18498906534 ---
