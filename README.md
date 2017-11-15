@@ -26,4 +26,4 @@ Experiments tried include
 
 
 ### Sample results
-![Results](https://ibb.co/fzY8dR "Results and vocab size")
+![Results](/data/vocab_sizepic.png?raw=true "Results and vocab size")
