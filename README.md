@@ -23,3 +23,7 @@ Experiments tried include
 	* *Dimension of embedding*: As expected increasing the number of dimensions does increase the nearest neighbor quality for a given query word but for our experiments we set it to *50* since with 300 embedding the computation time is expensive
 
 * **Different Optimizers**: I experimented with three different optimizers - (Adam, Adagrad, SGD) and found the best to be SGD with a constant learning rate of 0.1. Although, I believe that implementing a learning rate decay mechanism may improve the model performance. We notice converge in loss value after approximately 10 epochs 
+
+
+### Sample results
+![Results](https://ibb.co/fzY8dR "Results and vocab size")
