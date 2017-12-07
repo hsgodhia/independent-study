@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[14]:
+# In[1]:
 
 import numpy as np
 import torch, pdb
@@ -12,9 +12,11 @@ from itertools import ifilter
 from random import randint
 from scipy.spatial.distance import cosine
 from scipy.stats import spearmanr
+import numpy as np
+import torch, pdb, csv
 
 
-# In[3]:
+# In[2]:
 
 BATCH_SIZE = 130000
 class Word2Vec(nn.Module):
@@ -48,17 +50,17 @@ class Word2Vec(nn.Module):
         return (torch.sum(res)*-1.0)/res.size(0)
 
 
-# In[9]:
+# In[3]:
 
-def get_sim(wrd, k, mat, word2index):
-    if wrd not in word2index:
-        return None
-    vec = mat[word2index[wrd], :].unsqueeze(1)
+def get_sim(wrd_indx, k, mat, descending=True):
+    vec = mat[wrd_indx, :].unsqueeze(1)
     othrs = torch.mm(mat, vec)
-    othrs, ind = torch.sort(othrs, 0, descending=True)
+    othrs, ind = torch.sort(othrs, 0, descending)
     topk = ind[:k]
+    results = []
     for i in range(topk.size()[0]):
-        print(index2word[topk[i][0]])
+        results.append(topk[i][0])
+    return results
 
 def get_score(wrd1, wrd2, mat, word2index):
     return torch.dot(mat[word2index[wrd1],:], mat[word2index[wrd2], :])
@@ -93,14 +95,14 @@ def process_lines(data):
     for cn, l in enumerate(data):
         dt = l.split("|||")
         score = float(dt[3].split(" ")[1].split("=")[1])
-        if score < 3.3:
+        if score < 3.4:
             continue
         wrd1, wrd2 = dt[1], dt[2]
         wrd1, wrd2 = wrd1.strip(), wrd2.strip()
 
         if ".pdf" not in wrd1 and ".pdf" not in wrd2 and wrd1.isalpha() and wrd2.isalpha():
             sc = editdist_score(wrd1, wrd2)
-            if sc > min(len(wrd1), len(wrd2))/2 + 2:
+            if sc > min(len(wrd1), len(wrd2))/2:
                 if wrd1 + " " + wrd2 not in pairs and wrd2 + " " + wrd1 not in pairs:
                     pairs.add(wrd1 + " " + wrd2)
                     if wrd1 not in vocab:
@@ -160,57 +162,66 @@ def filter_data(pairs, word2index):
     return new_pairs
 
 
-# In[10]:
+# In[4]:
+
+def load_opposites():
+    oppos = {}
+    with open('sneha_antonyms.csv', 'r') as csvfile:
+        next(csvfile)
+        data = csv.reader(csvfile, delimiter=',')
+        for row in data:
+            if row[1] == 'antonym' and float(row[2]) > 0.85:
+                wrd1, wrd2 = row[3], row[4]
+                wrd1 = wrd1.strip().lower()
+                wrd2 = wrd2.strip().lower()
+                
+                if wrd1 not in oppos:
+                    oppos[wrd1] = []
+                oppos[wrd1].append(wrd2)
+                if wrd2 not in oppos:
+                    oppos[wrd2] = []
+                oppos[wrd2].append(wrd1)
+    return oppos
+
+def init_train(glove_path, dim, min_count, neg_exmpl):
+    g_vocab = get_glovedict(glove_path)
+    pairs, tok_freq = get_vocab(min_count, flName="ppdb-2.0-l-lexical")
+    opposites = load_opposites()
+    for wrd in opposites:
+        if wrd not in tok_freq:
+            tok_freq[wrd] = 0
+        tok_freq[wrd] += 1
+        
+        antos = opposites[wrd]
+        for awrd in antos:
+            if awrd not in tok_freq:
+                tok_freq[awrd] = 0
+            tok_freq[awrd] += 1
+            
+    vocab = set(tok_freq.keys())
+    vocab = vocab.intersection(g_vocab)
+
+    word2index, index2word = {}, {}
+    
+    for wrd in vocab:
+        if tok_freq[wrd] >= min_count:
+            index2word[len(index2word)] = wrd
+            word2index[wrd] = len(index2word) - 1
+        else:
+            tok_freq[wrd] = 0
+            
+    pairs = filter_data(pairs, word2index)
+    print("Data ready: {} {} {}".format(len(index2word), len(pairs), len(vocab)))
+    return pairs, word2index, index2word, vocab, tok_freq, opposites
+
+
+# In[5]:
 
 glove_path, dim, min_count, neg_exmpl = "glove.6B.50d.txt", 50, 1, 10
-g_vocab = get_glovedict(glove_path)
-pairs, tok_freq = get_vocab(min_count, flName="ppdb-2.0-l-lexical")
-
-vocab = set(tok_freq.keys())
-vocab = vocab.intersection(g_vocab)
-word2index, index2word = {}, {}
-
-for wrd in vocab:
-    if tok_freq[wrd] >= min_count:
-        index2word[len(index2word)] = wrd
-        word2index[wrd] = len(index2word) - 1
-    else:
-        tok_freq[wrd] = 0
-
-pairs = filter_data(pairs, word2index)
-vocab_size = len(index2word)
-print("Data ready: {} {} {}".format(vocab_size, len(pairs), len(vocab)))
+pairs, word2index, index2word, vocab, tok_freq, opposites = init_train(glove_path, dim, min_count, neg_exmpl)    
 
 
-# In[11]:
-
-mdl = Word2Vec(vocab_size, dim)
-mdl.load_state_dict(torch.load('./mdl_skipgm.pth', map_location=lambda storage, loc: storage))
-w2vmat = torch.nn.functional.normalize(mdl.word_emb.weight.data.cpu())
-
-
-# In[12]:
-
-def get_sim(wrd, k, mat, word2index):
-    if wrd not in word2index:
-        return None
-    vec = mat[word2index[wrd], :].unsqueeze(1)
-    othrs = torch.mm(mat, vec)
-    othrs, ind = torch.sort(othrs, 0, descending=True)
-    topk = ind[:k]
-    for i in range(topk.size()[0]):
-        print(index2word[topk[i][0]])
-
-def get_score(wrd1, wrd2, mat, word2index):
-    return torch.dot(mat[word2index[wrd1],:], mat[word2index[wrd2], :])
-
-
-# In[13]:
-
-get_score("grow", "shrink", w2vmat, word2index)
-
-
-# In[43]:
+# In[6]:
 
 def read_data(file, k):
     file = open(file,'r')
@@ -226,19 +237,6 @@ def read_data(file, k):
             examples.append(ex)
     return examples
 
-
-# In[44]:
-
-simlex_lines = read_data('./SimLex-999/SimLex-999.txt', 3)
-
-
-# In[45]:
-
-simlex_lines[0]
-
-
-# In[35]:
-
 def getCorrelation(lines, We, word2index):
     gold, pred, skip = [], [], 0
     for i in lines:
@@ -253,56 +251,141 @@ def getCorrelation(lines, We, word2index):
     return (spearmanr(pred,gold)[0])
 
 
-# In[36]:
+# In[7]:
+
+pretrained_weight = get_gloveready(glove_path, len(word2index), dim, word2index)
+pretrained_weight = torch.nn.functional.normalize(pretrained_weight)
+botk = {}
+for wrd in vocab:
+    res = get_sim(word2index[wrd], 10, pretrained_weight, False)
+    botk[wrd] = res
+
+
+# In[8]:
+
+for w in botk['smashed']:
+    print index2word[w],
+
+print("")    
+for w in get_sim(word2index['smashed'], 50, pretrained_weight):
+    print index2word[w],
+
+
+# In[9]:
+
+mdl = Word2Vec(len(index2word), dim)    
+mdl.load_state_dict(torch.load('./mdl_skipgme7.pth', map_location=lambda storage, loc: storage))
+w2vmat = mdl.word_emb.weight.data.cpu()
+wnorm = torch.norm(w2vmat, 2, 1, True)
+w2vmat = w2vmat/wnorm
+
+
+# In[26]:
+
+get_score("big", "shrink", w2vmat, word2index)
+
+
+# In[11]:
+
+simlex_lines = read_data('./SimLex-999/SimLex-999.txt', 3)
+
+
+# In[12]:
+
+simlex_lines[0]
+
+
+# In[13]:
 
 getCorrelation(simlex_lines, w2vmat, word2index)
 
 
-# In[37]:
+# In[14]:
 
-pretrained_weight = get_gloveready(glove_path, vocab_size, dim, word2index)
-pretrained_weight = torch.nn.functional.normalize(pretrained_weight)
+get_score("small", "shrink", w2vmat, word2index)
 
 
-# In[38]:
+# In[15]:
+
+for w in get_sim(word2index['eat'], 10, w2vmat):
+    print index2word[w], 
+
+
+# In[16]:
 
 getCorrelation(simlex_lines, pretrained_weight, word2index)
 
 
-# In[39]:
+# In[17]:
 
-get_score("grow", "shrink", pretrained_weight, word2index)
+get_score("big", "shrink", pretrained_weight, word2index)
 
 
-# In[46]:
+# In[18]:
 
 ws353sim_lines = read_data('./wordsim353/wordsim_simg.txt', 2)
 ws353rel_lines = read_data('./wordsim353/wordsim_relg.txt', 2)
 
 
-# In[47]:
+# In[19]:
 
 ws353sim_lines[0]
 
 
-# In[48]:
+# In[20]:
 
 getCorrelation(ws353sim_lines, w2vmat, word2index)
 
 
-# In[49]:
+# In[21]:
 
 getCorrelation(ws353rel_lines, w2vmat, word2index)
 
 
-# In[50]:
+# In[22]:
 
 getCorrelation(ws353sim_lines, pretrained_weight, word2index)
 
 
-# In[51]:
+# In[23]:
 
 getCorrelation(ws353rel_lines, pretrained_weight, word2index)
+
+
+# In[24]:
+
+for w in get_sim(word2index['fear'], 10, w2vmat):
+    print index2word[w], 
+
+
+# In[18]:
+
+get_sim('eat', 10, w2vmat, word2index)
+
+
+# In[29]:
+
+get_sim('eat', 10, pretrained_weight, word2index)
+
+
+# In[76]:
+
+get_sim('fear', 10, pretrained_weight, word2index)
+
+
+# In[77]:
+
+get_sim('fear', 10, w2vmat, word2index)
+
+
+# In[78]:
+
+get_sim('like', 10, w2vmat, word2index)
+
+
+# In[79]:
+
+get_sim('like', 10, pretrained_weight, word2index)
 
 
 # In[ ]:
