@@ -1,0 +1,230 @@
+Data ready: 17585 103416 17585
+Found 17585 words with glove vectors, total was 17585
+Glove loaded
+('filtered data size:', 103416)
+Training..
+occur occurring occurs arise affect affected possibly due result caused saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 0 and loss: 7.99202184221 ---
+occur occurring arise occurs affect possibly affected due result resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 1 and loss: 7.78340080697 ---
+occur occurring arise affect occurs possibly due affected result resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 2 and loss: 7.66386266972 ---
+occur occurring arise affect due possibly occurs affected result resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 3 and loss: 7.55305288493 ---
+occur occurring arise affect possibly due occurs result affected localized saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 4 and loss: 7.42974004478 ---
+occur occurring arise affect possibly due occurs result localized resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 5 and loss: 7.28719488726 ---
+occur occurring arise affect possibly due result localized occurs resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 6 and loss: 7.12373450508 ---
+occur occurring arise affect possibly due result localized persist extent saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 7 and loss: 6.94658039525 ---
+occur occurring arise affect possibly due result persist localized extent saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 8 and loss: 6.75729373484 ---
+occur occurring arise affect possibly due persist result outbreaks causing saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 9 and loss: 6.56650756245 ---
+ubuntu@ip-10-0-29-85:~/nlp$ 
+
+
+Adagrad start with 0.005 and adaptively it reduces the learning rate, final results for occur
+
+occur
+occurring
+arise
+affect
+possibly
+due
+persist
+result
+outbreaks
+causing
+
+
+Fixed SGD with lr 0.3
+ubuntu@ip-10-0-29-85:~/nlp$ python word_vec_negsmpl.py 
+Data ready: 17585 103416 17585
+Found 17585 words with glove vectors, total was 17585
+Glove loaded
+('filtered data size:', 103416)
+Training..
+occur occurring occurs arise affect affected possibly due result caused saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 0 and loss: 7.98155931647 ---
+occur occurring arise affect possibly due result resulting possible occurs saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 1 and loss: 7.62116982628 ---
+occur occurring arise affect possibly due result possible resulting normal saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 2 and loss: 7.44684511389 ---
+occur occurring arise affect possibly due result possible normal resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 3 and loss: 7.23001342424 ---
+occur occurring arise affect possibly due result possible normal localized saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 4 and loss: 6.92091559234 ---
+occur occurring arise affect possibly due normal possible result exist saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 5 and loss: 6.55060900526 ---
+occur occurring arise affect possibly due normal possible exist onset saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 6 and loss: 6.17671039833 ---
+occur arise affect occurring possibly due normal onset persist exist saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 7 and loss: 5.8320487544 ---
+occur arise affect possibly due occurring normal onset persist severe saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 8 and loss: 5.52986032612 ---
+occur arise affect possibly due normal onset persist occurring damage saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 9 and loss: 5.27337860669 ---
+
+Although it achieves a smaller loss value it is drastically bad in performance,
+occur
+arise
+affect
+possibly
+due
+normal
+onset
+persist
+occurring
+damage
+
+
+Adagrad start with 0.006 but added antonyms to the training data and injected them to the context
+
+Data ready: 17585 103416 17585
+Found 17585 words with glove vectors, total was 17585
+Glove loaded
+('filtered data size:', 103416)
+Training..
+occur occurring occurs arise affect affected possibly due result caused saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 0 and loss: 7.94321929578 ---
+occur occurring arise affect occurs due result possibly affected resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 1 and loss: 7.70767916725 ---
+occur occurring arise affect occurs due result possibly affected resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 2 and loss: 7.54785031876 ---
+occur occurring arise affect possibly due result occurs affected resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 3 and loss: 7.36257146221 ---
+occur occurring arise affect possibly due result occurs resulting possible saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 4 and loss: 7.13705232964 ---
+occur occurring arise affect possibly due result resulting possible normal saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 5 and loss: 6.87904457359 ---
+occur occurring arise affect possibly due result resulting exist possible saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 6 and loss: 6.6035741676 ---
+occur occurring arise affect possibly due result exist normal resulting saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 7 and loss: 6.32741536647 ---
+occur occurring arise affect possibly due result normal exist effect saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 8 and loss: 6.06623667928 ---
+occur occurring arise affect possibly due result normal effect exist saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 9 and loss: 5.82432745688 —c
+
+occur
+occurring
+arise
+affect
+possibly
+due
+result
+normal
+effect
+exist
+
+With negative controlled sampling from the bottom 20
+ata ready: 17585 103416 17585
+Found 17585 words with glove vectors, total was 17585
+Glove loaded
+('filtered data size:', 103416)
+Training..
+occur occurring occurs arise affect affected possibly due result caused saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 0 and loss: 5.21794638055 ---
+occur occurring occurs arise affect possibly localized affected caused result saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 1 and loss: 3.98149736811 ---
+occur occurring occurs arise affect localized possibly result due caused saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 2 and loss: 3.29070709349 ---
+occur occurring arise affect occurs localized result possibly due likely saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 3 and loss: 2.83592635716 ---
+occur occurring arise affect localized due result possibly occurs likely saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 4 and loss: 2.51223211668 ---
+occur occurring arise affect localized due result possibly likely occurrences saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 5 and loss: 2.26961006371 ---
+occur occurring arise affect localized due result possibly likely occurrences saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 6 and loss: 2.08079672771 ---
+occur occurring arise affect localized due likely result possibly occurrences saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 7 and loss: 1.92920076565 ---
+occur occurring arise affect localized due likely result possibly occurrences saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 8 and loss: 1.80485138464 ---
+occur occurring affect arise localized due likely result possibly occurrences saved model
+('tuples processed (wrd, cntxt):', 206800)
+---completed: 9 and loss: 1.7008714288 ---
+occur
+occurring
+affect
+arise
+localized
+due
+likely
+result
+possibly
+occurrences
+
+
+occur affect arise due possibly happen normal situation rarely occurring 
+('tuples processed (wrd, cntxt):', 296300)
+---completed: 54 and loss: 2.81285909636 ---
+Processed: 484 total size was: 999
+Current correlation 0.423713841991
+occur affect arise due possibly happen normal situation rarely occurring 
+('tuples processed (wrd, cntxt):', 296300)
+---completed: 55 and loss: 2.8009061617 ---
+Processed: 484 total size was: 999
+Current correlation 0.424202143513
+occur affect arise due possibly happen normal situation rarely persist 
+('tuples processed (wrd, cntxt):', 296300)
+---completed: 56 and loss: 2.78986360799 ---
+Processed: 484 total size was: 999
+Current correlation 0.424837141883
+occur affect arise due possibly happen normal situation rarely persist 
+('tuples processed (wrd, cntxt):', 296300)
+---completed: 57 and loss: 2.7794013622 ---
+Processed: 484 total size was: 999
+Current correlation 0.425625558061
+occur affect due arise possibly happen normal situation rarely persist 
+('tuples processed (wrd, cntxt):', 296300)
+---completed: 58 and loss: 2.76840619803 ---
+Processed: 484 total size was: 999
+Current correlation 0.426294214149
+occur affect due arise possibly happen normal situation rarely persist 
+('tuples processed (wrd, cntxt):', 296300)
+---completed: 59 and loss: 2.75926410464 ---
+Processed: 484 total size was: 999
+Current correlation 0.426313318609
